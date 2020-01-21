@@ -1,6 +1,6 @@
 {
-  "name": "meet-addon-devtools",
-  "version": "0.1.0",
+  "name": "meet-addons-devtools",
+  "version": "0.1.1",
   "description": "Set of tools helping developing addons for Meet.rs",
   "scripts": {
     "build": "tsc",
