@@ -1,0 +1,4 @@
+export interface ITokenInfo {
+    access_token: string;
+    expires_at: number;
+}
