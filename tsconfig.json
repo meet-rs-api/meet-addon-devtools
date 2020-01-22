@@ -3,9 +3,12 @@
       "target": "es5",
       "lib": ["es5", "es6", "dom"],
       "module": "commonjs",
-      "outDir": "dist",
+      "outDir": "./dist",
       "sourceMap": true,
-      "declaration": true
+      "declaration": true,
+      "noImplicitAny": true,
+      "jsx": "react",
+      "allowJs": true
     },
     "include": [
       "src/**/*.ts"

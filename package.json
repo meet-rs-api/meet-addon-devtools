@@ -1,9 +1,8 @@
 {
   "name": "meet-addons-devtools",
-  "version": "0.1.33",
+  "version": "0.1.34",
   "description": "Set of tools helping developing addons for Meet.rs",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./src/index.ts",
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
@@ -24,6 +23,7 @@
   },
   "homepage": "https://github.com/meet-rs-api/meet-addon-devtools#readme",
   "devDependencies": {
+    "ts-loader": "^6.2.1",
     "typescript": "^3.7.5",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10"

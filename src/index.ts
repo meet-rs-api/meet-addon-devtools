@@ -1,8 +1,8 @@
-import { TokenService } from "./TokenService";
+import { TokenService } from "./services/TokenService";
 
 import AddonsSdk, { InitMessage, AddonMode, PredefinedMeetingState, MessageType } from "meet-addons-sdk";
 
-class Index {
+export class Index {
     
     constructor() {
 
