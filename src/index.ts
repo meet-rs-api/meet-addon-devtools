@@ -1,5 +1,4 @@
-import { TokenService } from "./services/TokenService";
-import { AddonRuntimeInfo } from "./services/AddonRuntimeInfo";
+import { TokenService } from "./TokenService";
 
 import AddonsSdk, { InitMessage, AddonMode, PredefinedMeetingState, MessageType } from "meet-addons-sdk";
 
@@ -7,6 +6,8 @@ class Index {
     
     constructor() {
 
+        console.log("[MEET-DEVTOOLS]:: ctor");
+        
         const host = localStorage.getItem("meet-dev-sdk-host");
         const addonIdentifier = localStorage.getItem("meet-dev-sdk-addon-id");
         if (!host || !addonIdentifier ) {

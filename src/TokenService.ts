@@ -32,6 +32,8 @@ export class TokenService {
             return Promise.reject("To use token service please define in local storage meet-dev-sdk-host and meet-dev-sdk-addon-id");
         } 
 
+        console.log("[MEET-DEVTOOLS]::tokenService-getSessionTokenAsync", sessionToken);
+
         const r = await fetch(`${host}/v1/meetingAddons/${addonIdentifier}`, {
             headers: {
                 "Authorization": `bearer ${sessionToken}`,
@@ -57,6 +59,8 @@ export class TokenService {
         if (!host) {
             return Promise.reject("To use token service please define in local storage meet-dev-sdk-host, meet-dev-sdk-key and meet-dev-sdk-secret");
         } 
+
+        console.log("[MEET-DEVTOOLS]::tokenService-getSessionTokenAsync", tenantToken, meetCode);
 
         const r = await fetch(`${host}/v1/token/session/${meetCode}`, {
             headers: {
@@ -84,6 +88,8 @@ export class TokenService {
         if (!host || !key || !secret ) {
             return Promise.reject("To use token service please define in local storage meet-dev-sdk-host, meet-dev-sdk-key and meet-dev-sdk-secret");
         } 
+
+        console.log("[MEET-DEVTOOLS]::tokenService-getTenantTokenAsync");
 
         const r = await fetch(`${host}/v1/token`, {
             body: JSON.stringify({
