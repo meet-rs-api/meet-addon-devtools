@@ -1,4 +1,4 @@
-import { ITokenInfo } from "./ITokenInfo";
+import { ITokenInfo, IAddonTokenInfo } from "./ITokenInfo";
 
 export interface ISettings {
     [key: string]: string;
@@ -126,7 +126,7 @@ export class AddonRuntimeInfo {
      * @type {ITokenInfo}
      * @memberof AddonRuntimeInfo
      */
-    public token!: ITokenInfo;
+    public token!: IAddonTokenInfo;
 
     /**
      * Gets or sets the info if the user is a guest user.

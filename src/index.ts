@@ -1,6 +1,6 @@
 import { TokenService } from "./services/TokenService";
 
-import AddonsSdk, { InitMessage, AddonMode, PredefinedMeetingState, MessageType } from "meet-addons-sdk";
+import { InitMessage, AddonMode, PredefinedMeetingState, MessageType } from "meet-addons-sdk";
 
 export class Index {
     
@@ -25,8 +25,8 @@ export class Index {
                     mode: AddonMode.NORMAL,
                     participants: [],
                     host: {
-                        authHost: host,
-                        origin: host
+                        authHost: host.replace("/v1", ""),
+                        origin: host.replace("/v1", "")
                     },
                     principal: {
                         addonIdentifier: addonIdentifier,
@@ -38,19 +38,18 @@ export class Index {
                         sessionUserRole: addonRuntimeInfo.sessionUserRole,
                         tenant: addonRuntimeInfo.tenant,
                         theme: "dark",
-                        token: {
-                            value: addonRuntimeInfo.token.access_token,
-                            expireAt: addonRuntimeInfo.token.expires_at,
-                        },
+                        token: addonRuntimeInfo.token,
                     },
                     settings: addonRuntimeInfo.settings,
                     state: PredefinedMeetingState.MEETING_STARTED,
                     type: MessageType.INIT,
                 }
-                
-                console.log("[MEET-DEVTOOLS] --> AddonsSdk.onInit", msg);
-                AddonsSdk.onInit(msg)
 
+                const w = window as any;
+                console.log("[MEET-DEVTOOLS] --> AddonsSdk.onInit", w.vivani);
+                if (w.vivani && w.vivani.sdk) {
+                    w.vivani.sdk.onInit(msg);
+                }
             })
     }
 }
