@@ -16,7 +16,8 @@ export class Index {
 
         const tokenService = new TokenService()
         tokenService.getTenantTokenAsync()
-            .then(tenantToken => tokenService.getSessionTokenAsync(tenantToken.access_token))
+
+            .then(tenantToken => tokenService.getSessionTokenAsync(tenantToken.access_token, addonIdentifier))
             .then(sessionToken => tokenService.getAddonRuntimeInfoAsync(sessionToken.access_token))
             .then(addonRuntimeInfo => {
                 const msg: InitMessage = {
@@ -47,7 +48,7 @@ export class Index {
                     type: MessageType.INIT,
                 }
                 
-                console.log("[MEET-DEVTOOLS]::Index initSdk", msg);
+                console.log("[MEET-DEVTOOLS] --> AddonsSdk.onInit", msg);
                 AddonsSdk.onInit(msg)
 
             })

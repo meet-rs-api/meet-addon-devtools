@@ -1,5 +1,6 @@
 import { ITokenInfo } from "./ITokenInfo";
 import { AddonRuntimeInfo } from "./AddonRuntimeInfo";
+import { IMeeting } from "./IMeeting";
 
 /**
  * This is class which can be used for local development of the SDK addon
@@ -32,9 +33,7 @@ export class TokenService {
             return Promise.reject("To use token service please define in local storage meet-dev-sdk-host and meet-dev-sdk-addon-id");
         } 
 
-        console.log("[MEET-DEVTOOLS]::tokenService-getSessionTokenAsync", sessionToken);
-
-        const r = await fetch(`${host}/v1/meetingAddons/${addonIdentifier}`, {
+        const r = await fetch(`${host}/meetingAddons/${addonIdentifier}`, {
             headers: {
                 "Authorization": `bearer ${sessionToken}`,
                 "Content-Type": "application/json",
@@ -49,27 +48,54 @@ export class TokenService {
      * Meet session (meeting code, role etc)
      *
      * @param {string} tenantToken An api token containing tenant claims.
-     * @param {string} meetCode Meet code for which session token shoudl be issued. If omited new meetign will be created.
+     * @param {string} addonIdentifier Id of the addon which should be part of meet config for which session token is returned.
      * @returns {Promise<ITokenInfo>}
      * @memberof TokenService
      */
-    public getSessionTokenAsync = async (tenantToken: string, meetCode: string = "new") : Promise<ITokenInfo> => {
+    public getSessionTokenAsync = async (tenantToken: string, addonIdentifier: string) : Promise<ITokenInfo> => {
 
         const host = localStorage.getItem("meet-dev-sdk-host");
-        if (!host) {
+       if (!host) {
             return Promise.reject("To use token service please define in local storage meet-dev-sdk-host, meet-dev-sdk-key and meet-dev-sdk-secret");
         } 
 
-        console.log("[MEET-DEVTOOLS]::tokenService-getSessionTokenAsync", tenantToken, meetCode);
+        const meetCode = localStorage.getItem("meet-dev-sdk-code");
 
-        const r = await fetch(`${host}/v1/token/session/${meetCode}`, {
+        const request = {
+            code: meetCode,
+            addonsInfo: [
+                {
+                    identifier: addonIdentifier,
+                }
+            ]
+        };
+
+        if (!meetCode) {
+            delete request.code
+        }
+
+        const r = await fetch(`${host}/meetings`, {
+            body: JSON.stringify(request),
+            headers: {
+                "Authorization": `bearer ${tenantToken}`,
+                "Content-Type": "application/json",
+            },
+            method: "POST",
+        });
+        
+        const meet: IMeeting = await r.json();
+        localStorage.setItem("meet-dev-sdk-code", meet.code);
+
+        const token = await fetch(`${host}/token/session/${meet.code}`, {
             headers: {
                 "Authorization": `bearer ${tenantToken}`,
                 "Content-Type": "application/json",
             },
             method: "GET",
         });
-        return await r.json();
+
+        return token.json();
+        
     }
 
     /**
@@ -89,9 +115,7 @@ export class TokenService {
             return Promise.reject("To use token service please define in local storage meet-dev-sdk-host, meet-dev-sdk-key and meet-dev-sdk-secret");
         } 
 
-        console.log("[MEET-DEVTOOLS]::tokenService-getTenantTokenAsync");
-
-        const r = await fetch(`${host}/v1/token`, {
+        const r = await fetch(`${host}/token`, {
             body: JSON.stringify({
                 grant_type: 'client_credentials',
                 client_key: key,
@@ -102,6 +126,11 @@ export class TokenService {
             },
             method: "POST",
         });
-        return await r.json();
+
+        if (r.ok)  {
+            return await r.json();
+        } else {
+            return Promise.reject("Invalid credentials meet-dev-sdk-host, meet-dev-sdk-key and meet-dev-sdk-secret");
+        }
     }
 }
