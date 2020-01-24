@@ -59,6 +59,7 @@ export class TokenService {
             return Promise.reject("To use token service please define in local storage meet-dev-sdk-host, meet-dev-sdk-key and meet-dev-sdk-secret");
         } 
 
+        const resourceType = localStorage.getItem("meet-dev-sdk-type") || '1';
         const meetCode = localStorage.getItem("meet-dev-sdk-code");
 
         const request = {
@@ -86,7 +87,7 @@ export class TokenService {
         const meet: IMeeting = await r.json();
         localStorage.setItem("meet-dev-sdk-code", meet.code);
 
-        const token = await fetch(`${host}/token/session/${meet.code}`, {
+        const token = await fetch(`${host}/token/session/${meet.code}/${resourceType}`, {
             headers: {
                 "Authorization": `bearer ${tenantToken}`,
                 "Content-Type": "application/json",
