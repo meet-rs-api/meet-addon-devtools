@@ -1,6 +1,7 @@
 import { ITokenInfo } from "./ITokenInfo";
 import { AddonRuntimeInfo } from "./AddonRuntimeInfo";
 import { IMeeting } from "./IMeeting";
+import { IEvent } from "./IEvent";
 
 /**
  * This is class which can be used for local development of the SDK addon
@@ -60,34 +61,20 @@ export class TokenService {
         } 
 
         const resourceType = localStorage.getItem("meet-dev-sdk-type") || '1';
-        const meetCode = localStorage.getItem("meet-dev-sdk-code");
+        let resourceId: string;
 
-        const request = {
-            code: meetCode,
-            addonsInfo: [
-                {
-                    identifier: addonIdentifier,
-                }
-            ]
-        };
-
-        if (!meetCode) {
-            delete request.code
+        switch (resourceType) {
+            case '1':
+                resourceId = await this.createMeetingAsync(addonIdentifier, tenantToken);
+                break;
+            case '2':
+                // CREATE EVENT HERE
+                const meetCode = await this.createMeetingAsync(addonIdentifier, tenantToken);
+                resourceId = await this.createEventAsync(meetCode, tenantToken);
+                break;
         }
 
-        const r = await fetch(`${host}/meetings`, {
-            body: JSON.stringify(request),
-            headers: {
-                "Authorization": `bearer ${tenantToken}`,
-                "Content-Type": "application/json",
-            },
-            method: "POST",
-        });
-        
-        const meet: IMeeting = await r.json();
-        localStorage.setItem("meet-dev-sdk-code", meet.code);
-
-        const token = await fetch(`${host}/token/session/${meet.code}/${resourceType}`, {
+        const token = await fetch(`${host}/token/session/${resourceId}/${resourceType}`, {
             headers: {
                 "Authorization": `bearer ${tenantToken}`,
                 "Content-Type": "application/json",
@@ -133,5 +120,85 @@ export class TokenService {
         } else {
             return Promise.reject("Invalid credentials meet-dev-sdk-host, meet-dev-sdk-key and meet-dev-sdk-secret");
         }
+    }
+
+    private createMeetingAsync = async (addonIdentifier: string, tenantToken: string): Promise<string> => {
+        const host = localStorage.getItem("meet-dev-sdk-host");
+        const meetCode = localStorage.getItem("meet-dev-sdk-code");
+
+        const request = {
+            code: meetCode,
+            addonsInfo: [
+                {
+                    identifier: addonIdentifier,
+                }
+            ]
+        };
+
+        if (!meetCode) {
+            delete request.code
+        }
+
+        const r = await fetch(`${host}/meetings`, {
+            body: JSON.stringify(request),
+            headers: {
+                "Authorization": `bearer ${tenantToken}`,
+                "Content-Type": "application/json",
+            },
+            method: "POST",
+        });
+        
+        const meet: IMeeting = await r.json();
+        localStorage.setItem("meet-dev-sdk-code", meet.code);
+
+        return meet.code;
+    }
+    
+    private createEventAsync = async (meetCode: string, tenantToken: string): Promise<string> => {
+        const host = localStorage.getItem("meet-dev-sdk-host");
+
+        const request = {
+            notifyParticipants: false,
+            title: 'Test event for meet:' + meetCode,
+            description: 'Description of the test event',
+            resolutionMode: 'fifo',
+            originId: meetCode,
+            participants: [
+                {
+                    email: "test-proposer@meet.rs",
+                    firstName: "Test",
+                    lastName: "Proposer",
+                    role: "PowerUser",
+                    order: 0,
+                },
+                {
+                    email: "test-selector@meet.rs",
+                    firstName: "Test",
+                    lastName: "Selector",
+                    role: "User",
+                    order: 1,
+                },
+                {
+                    email: "test-admin@meet.rs",
+                    firstName: "Test",
+                    lastName: "Admin",
+                    role: "Admin",
+                    order: 2,
+
+                },
+            ]
+        };
+
+        const r = await fetch(`${host}/events`, {
+            body: JSON.stringify(request),
+            headers: {
+                "Authorization": `bearer ${tenantToken}`,
+                "Content-Type": "application/json",
+            },
+            method: "POST",
+        });
+        
+        const event: IEvent = await r.json();
+        return event.code;
     }
 }
