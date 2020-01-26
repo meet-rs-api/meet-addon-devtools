@@ -182,15 +182,7 @@ export class TokenService {
                     lastName: "Selector",
                     role: "User",
                     order: 1,
-                },
-                {
-                    email: "test-admin@meet.rs",
-                    firstName: "Test",
-                    lastName: "Admin",
-                    role: "Admin",
-                    order: 2,
-
-                },
+                }
             ]
         };
 
