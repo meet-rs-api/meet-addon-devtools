@@ -15,6 +15,7 @@ const index = async () => {
 
     const w = window as any;
     w.vivani = w.vivani || {};
+    w.vivani.ctx = w.vivani.ctx || {};
     w.vivani.devTools = w.vivani.devTools || {
         getSessionToken: () => tokenPromise
     };
@@ -27,19 +28,22 @@ const index = async () => {
 
     const tokenService = new TokenService();
     const tenantToken = await tokenService.getTenantTokenAsync();
-    const sessionToken = await tokenService.getSessionTokenAsync(tenantToken.access_token, addonIdentifier);
+    const sessionTokenInfo = await tokenService.getSessionTokenAsync(tenantToken.access_token, addonIdentifier);
 
     if (tokenResolver) {
-        console.log("[Meet|DevTools]::> w.vivani.getSessionToken -> resolving", sessionToken);
-        tokenResolver(sessionToken)
+        console.log("[Meet|DevTools]::> w.vivani.getSessionToken -> resolving", sessionTokenInfo.token);
+        tokenResolver(sessionTokenInfo.token)
     }
+
+    w.vivani.ctx.resourceId = sessionTokenInfo.resourceId;
+    w.vivani.ctx.resourceType = sessionTokenInfo.resourceType;
 
     if (w.vivani.sdk) {
         const resourceType = localStorage.getItem("meet-dev-sdk-type") || '1';
         if (resourceType !== '1') {
             console.log("[Meet|DevTools]::> not in addon mode - skipping initialization of addon sdk");
         } else {
-            const addonRuntimeInfo = await tokenService.getAddonRuntimeInfoAsync(sessionToken.access_token);
+            const addonRuntimeInfo = await tokenService.getAddonRuntimeInfoAsync(sessionTokenInfo.token.access_token);
             const msg: InitMessage = {
                 configuration: [],
                 mode: AddonMode.NORMAL,

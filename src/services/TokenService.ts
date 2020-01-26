@@ -3,6 +3,8 @@ import { AddonRuntimeInfo } from "./AddonRuntimeInfo";
 import { IMeeting } from "./IMeeting";
 import { IEvent } from "./IEvent";
 
+import {ISessionTokenInfo} from "./ISessionTokenInfo";
+
 /**
  * This is class which can be used for local development of the SDK addon
  * and which provides an easy way to retrieve auth token using the global variables.
@@ -53,22 +55,21 @@ export class TokenService {
      * @returns {Promise<ITokenInfo>}
      * @memberof TokenService
      */
-    public getSessionTokenAsync = async (tenantToken: string, addonIdentifier: string) : Promise<ITokenInfo> => {
+    public getSessionTokenAsync = async (tenantToken: string, addonIdentifier: string) : Promise<ISessionTokenInfo> => {
 
         const host = localStorage.getItem("meet-dev-sdk-host");
        if (!host) {
             return Promise.reject("[Meet|DevTools]:To use token service please define in local storage meet-dev-sdk-host, meet-dev-sdk-key and meet-dev-sdk-secret");
         } 
 
-        const resourceType = localStorage.getItem("meet-dev-sdk-type") || '1';
+        const resourceType = parseInt(localStorage.getItem("meet-dev-sdk-type") || '1');
         let resourceId: string;
 
         switch (resourceType) {
-            case '1':
+            case 1: // meet
                 resourceId = await this.createMeetingAsync(addonIdentifier, tenantToken);
                 break;
-            case '2':
-                // CREATE EVENT HERE
+            case 2: // event
                 const meetCode = await this.createMeetingAsync(addonIdentifier, tenantToken);
                 resourceId = await this.createEventAsync(meetCode, tenantToken);
                 break;
@@ -82,8 +83,12 @@ export class TokenService {
             method: "GET",
         });
 
-        return token.json();
-        
+        const tokenInfo = await token.json();
+        return Promise.resolve<ISessionTokenInfo>({
+            token: tokenInfo,
+            resourceType,
+            resourceId
+        });
     }
 
     /**
