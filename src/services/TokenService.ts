@@ -31,7 +31,7 @@ export class TokenService {
         const host = localStorage.getItem("meet-dev-sdk-host");
         const addonIdentifier = localStorage.getItem("meet-dev-sdk-addon-id");
         if (!host || !addonIdentifier ) {
-            return Promise.reject("To use token service please define in local storage meet-dev-sdk-host and meet-dev-sdk-addon-id");
+            return Promise.reject("[Meet|DevTools]:To use token service please define in local storage meet-dev-sdk-host and meet-dev-sdk-addon-id");
         } 
 
         const r = await fetch(`${host}/meetingAddons/${addonIdentifier}`, {
@@ -57,7 +57,7 @@ export class TokenService {
 
         const host = localStorage.getItem("meet-dev-sdk-host");
        if (!host) {
-            return Promise.reject("To use token service please define in local storage meet-dev-sdk-host, meet-dev-sdk-key and meet-dev-sdk-secret");
+            return Promise.reject("[Meet|DevTools]:To use token service please define in local storage meet-dev-sdk-host, meet-dev-sdk-key and meet-dev-sdk-secret");
         } 
 
         const resourceType = localStorage.getItem("meet-dev-sdk-type") || '1';
@@ -100,7 +100,7 @@ export class TokenService {
         const secret = localStorage.getItem("meet-dev-sdk-secret");
 
         if (!host || !key || !secret ) {
-            return Promise.reject("To use token service please define in local storage meet-dev-sdk-host, meet-dev-sdk-key and meet-dev-sdk-secret");
+            return Promise.reject("[Meet|DevTools]:To use token service please define in local storage meet-dev-sdk-host, meet-dev-sdk-key and meet-dev-sdk-secret");
         } 
 
         const r = await fetch(`${host}/token`, {
@@ -118,7 +118,7 @@ export class TokenService {
         if (r.ok)  {
             return await r.json();
         } else {
-            return Promise.reject("Invalid credentials meet-dev-sdk-host, meet-dev-sdk-key and meet-dev-sdk-secret");
+            return Promise.reject("[Meet|DevTools]:Invalid credentials meet-dev-sdk-host, meet-dev-sdk-key and meet-dev-sdk-secret");
         }
     }
 
