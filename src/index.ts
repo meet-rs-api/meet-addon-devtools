@@ -1,21 +1,20 @@
 import { TokenService } from "./services/TokenService";
 
 import { InitMessage, AddonMode, PredefinedMeetingState, MessageType } from "meet-addons-sdk";
-import { ITokenInfo } from "./services/ITokenInfo";
+import { ISessionTokenInfo } from "./services/ISessionTokenInfo";
 
 const index = async () => {
-    console.log("[Meet|DevTools]::> START")
+    const w = window as any;
+    console.log("[Meet|DevTools]::> START", w.vivani);
 
-    let tokenResolver: (value?: ITokenInfo | PromiseLike<ITokenInfo>) => void;
-    const tokenPromise = new Promise<ITokenInfo>((resolve) => {
+    let tokenResolver: (value?: ISessionTokenInfo | PromiseLike<ISessionTokenInfo>) => void;
+    const tokenPromise = new Promise<ISessionTokenInfo>((resolve) => {
         tokenResolver = resolve;
     });
     // note: m1 - initializing token resolver
     tokenPromise.then();
 
-    const w = window as any;
     w.vivani = w.vivani || {};
-    w.vivani.ctx = w.vivani.ctx || {};
     w.vivani.devTools = w.vivani.devTools || {
         getSessionToken: () => tokenPromise
     };
@@ -31,12 +30,11 @@ const index = async () => {
     const sessionTokenInfo = await tokenService.getSessionTokenAsync(tenantToken.access_token, addonIdentifier);
 
     if (tokenResolver) {
-        console.log("[Meet|DevTools]::> w.vivani.getSessionToken -> resolving", sessionTokenInfo.token);
-        tokenResolver(sessionTokenInfo.token)
+        console.log("[Meet|DevTools]::> w.vivani.getSessionToken -> resolving", sessionTokenInfo);
+        tokenResolver(sessionTokenInfo)
     }
 
-    w.vivani.ctx.resourceId = sessionTokenInfo.resourceId;
-    w.vivani.ctx.resourceType = sessionTokenInfo.resourceType;
+    console.log("[Meet|DevTools]::> w.vivani", w.vivani);
 
     if (w.vivani.sdk) {
         const resourceType = localStorage.getItem("meet-dev-sdk-type") || '1';
