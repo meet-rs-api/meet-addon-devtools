@@ -175,6 +175,7 @@ export class TokenService {
                     lastName: "Proposer",
                     role: "PowerUser",
                     order: 0,
+                    timezone: "America/Los_Angeles"
                 },
                 {
                     email: "test-selector@meet.rs",
@@ -182,6 +183,7 @@ export class TokenService {
                     lastName: "Selector",
                     role: "User",
                     order: 1,
+                    timezone: "Europe/Belgrade"
                 }
             ]
         };
